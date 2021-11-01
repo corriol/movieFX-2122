@@ -1,0 +1,33 @@
+version: "3.3"
+services:
+  web-server:
+    build:
+      dockerfile: php.Dockerfile
+      context: .
+    restart: "no"
+    volumes:
+      - "./:/var/www/html/"
+    ports:
+      - "8080:80"
+    environment:
+      XDEBUG_CONFIG: client_host=192.168.0.14
+
+  mysql-server:
+    image: mariadb:10.4.21
+    restart: "no"
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:5.1.1
+    restart: "no"
+    environment:
+      PMA_HOST: mysql-server
+      PMA_USER: root
+      PMA_PASSWORD: secret
+    ports:
+      - "5000:80"
+volumes:
+  mysql-data:
