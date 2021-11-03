@@ -58,8 +58,6 @@ if (isPost()) {
 if (isPost() && empty($errors)) {
     $pdo = new PDO("mysql:host=mysql-server;dbname=movieFX;charset=utf8", "dbuser", "1234");
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $pdo->setAttribute(PDO::MYSQL_ATTR_INIT_COMMAND, 'SET NAMES utf8');
-
 
     $moviesStmt = $pdo->prepare("DELETE FROM movie
                                 WHERE id = :id");

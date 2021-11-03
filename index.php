@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require "src/Movie.php";
+require "src/User.php";
 // ara obtindrem les pel·lícules de la BD
 // require "movies.inc.php";
 
@@ -27,4 +28,21 @@ foreach ($moviesAr as $movieAr) {
     $movies[] = $movie;
 }
 
-require "views/index.view.php";
+// treballaré en l'última película
+echo "La pel·lícula {$movie->getTitle()} té una valoració de {$movie->getRating()}";
+
+$user = new User(1, "Vicent");
+
+$value = 5;
+
+echo "<p>L'usuari {$user->getUsername()} la valora en $value punts</p>";
+
+$user->rate($movie, $value);
+
+echo "<p>La pel·lícula {$movie->getTitle()} té ara una valoració de {$movie->getRating()}</p>";
+
+
+
+
+
+//require "views/index.view.php";
