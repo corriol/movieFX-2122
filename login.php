@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+session_start();
 
 // es bona idea no treballar en literal
 const COOKIE_USERNAME = "last_used_name";
@@ -36,6 +37,8 @@ if (isPost()) {
         if (login($username, $password)) {
             //cree la cookie
             setcookie(COOKIE_USERNAME, $username, time() + 30 * 24 * 60 * 60);
+
+            $_SESSION["user"] = $username;
 
         } else {
             //l'elimine;

@@ -1,6 +1,8 @@
 <?php declare(strict_types=1); ?>
-
 <?php
+session_start();
+if (empty($_SESSION["user"]))
+    die("<p><a href= \"login.php\">Login</a> or die!</p>");
 
 // Inicialitze les variables perquè existisquen en tots els possibles camins
 // Sols emmagatzameré en elles valors vàlids.
