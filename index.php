@@ -35,7 +35,10 @@ require "src/User.php";
 // ara obtindrem les pel·lícules de la BD
 // require "movies.inc.php";
 
+echo "<h2>Activitat 501</h2>";
 echo "<p>$message</p>";
+
+
 
 $pdo = new PDO("mysql:host=mysql-server;dbname=movieFX;charset=utf8", "dbuser", "1234");
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
