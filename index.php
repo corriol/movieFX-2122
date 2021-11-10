@@ -30,6 +30,27 @@ else
 setcookie(COOKIE_LAST_VISIT, (string)time(), time() + 7 * 24 * 60 * 60);
 
 
+// Task 504
+
+# index.php
+// Activem el suport per a sessions
+session_start();
+
+// comprovem si es la primera visita
+$visits = $_SESSION["visits"]??[];
+
+// if not empty generate an HTML Unordered List
+if (!empty($visits))
+    $messageSession =  "<ul><li>" . implode("</li><li>", array_map(function($v) {
+            return date("d/m/Y h:i:s", $v);
+        }, $visits)) . "</li></ul>";
+else
+    $messageSession = "Benvigut! (versió sessió)!";
+
+// guardem en un array index
+$_SESSION["visits"][] = time();
+
+
 require "src/Movie.php";
 require "src/User.php";
 // ara obtindrem les pel·lícules de la BD
@@ -37,6 +58,9 @@ require "src/User.php";
 
 echo "<h2>Activitat 501</h2>";
 echo "<p>$message</p>";
+
+echo "<h2>Activitat 504</h2>";
+echo "<p>$messageSession</p>";
 
 
 
