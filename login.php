@@ -35,7 +35,7 @@ if (isPost()) {
 
         if (login($username, $password)) {
             //cree la cookie
-            setcookie(COOKIE_USERNAME, $username, time() + 24 * 60 * 60);
+            setcookie(COOKIE_USERNAME, $username, time() + 30 * 24 * 60 * 60);
 
         } else {
             //l'elimine;
