@@ -1,10 +1,41 @@
 <?php
 declare(strict_types=1);
 
+
+// es bona idea no treballar en literal
+const COOKIE_LAST_VISIT = "last_visit_date";
+
+
+
+// we get the current cookie value
+$lastVisit = filter_input(INPUT_COOKIE, COOKIE_LAST_VISIT, FILTER_VALIDATE_INT);
+
+// we can also use the coalsece operator
+/* $lastVisit =(int)($_COOKIE[$cookieName] ?? null); //
+// or the traditional isset
+/* if (isset($_COOKIE[$cookieName])) {
+    $lastVisit = (int)$_COOKIE[$cookieName];
+} else
+    $lastVisit = null;
+*/
+
+// if null we show a welcome message
+if (empty($lastVisit))
+    $message = "Benvingut!";
+else
+    $message = "Benvingut de nou, la teua darrera visita va ser el  " .
+        date("d/m/Y h:i:s", $lastVisit);
+
+// we register the current time and set the expiration date to the next week.
+setcookie(COOKIE_LAST_VISIT, (string)time(), time() + 7 * 24 * 60 * 60);
+
+
 require "src/Movie.php";
 require "src/User.php";
 // ara obtindrem les pel·lícules de la BD
 // require "movies.inc.php";
+
+echo "<p>$message</p>";
 
 $pdo = new PDO("mysql:host=mysql-server;dbname=movieFX;charset=utf8", "dbuser", "1234");
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -40,6 +71,7 @@ echo "<p>L'usuari {$user->getUsername()} la valora en $value punts</p>";
 $user->rate($movie, $value);
 
 echo "<p>La pel·lícula {$movie->getTitle()} té ara una valoració de {$movie->getRating()}</p>";
+
 
 
 

@@ -37,6 +37,8 @@ $moviesStmt->setFetchMode(PDO::FETCH_ASSOC);
 $moviesStmt->execute();
 
 $data = $moviesStmt->fetch();
+if (empty($data))
+    throw new Exception("La pel·lícula seleccionada no existeix");
 
 
 $validTypes = ["image/jpeg", "image/jpg"];
@@ -45,13 +47,6 @@ $errors = [];
 
 // per a la vista necessitem saber si s'ha processat el formulari
 if (isPost()) {
-
-    $idTemp = filter_input(INPUT_POST, "id", FILTER_VALIDATE_INT);
-
-    if (!empty($idTemp))
-        $data["id"] = $idTemp;
-    else
-        throw  new Exception("Invalid ID");
 
     try {
         if (validate_string($_POST["title"], 1, 100))
@@ -140,7 +135,7 @@ if (isPost() && empty($errors)) {
     $moviesStmt->execute($data);
 
     if ($moviesStmt->rowCount() !== 1)
-        $errors[] = "No s'ha pogut inserir el registre";
+        $errors[] = "No s'ha pogut actualitzar el registre";
     else
         $message = "S'ha actualitzat el registre amb l'ID ({$data["id"]})";
 }
