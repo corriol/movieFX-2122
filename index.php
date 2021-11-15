@@ -62,6 +62,12 @@ echo "<p>$message</p>";
 echo "<h2>Activitat 504</h2>";
 echo "<p>$messageSession</p>";
 
+if (!empty($_SESSION["message"])) {
+    echo "<h2>Activitat 507</h2>";
+    echo "<p>{$_SESSION["message"]}</p>";
+    unset ($_SESSION["message"]);
+}
+
 
 
 $pdo = new PDO("mysql:host=mysql-server;dbname=movieFX;charset=utf8", "dbuser", "1234");
