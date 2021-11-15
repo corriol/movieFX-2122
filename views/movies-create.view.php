@@ -18,6 +18,9 @@
             print_r($errors)
         ?>
         </pre>
+
+        <input type="hidden" name="token" value="<?= $formToken ?>"/>
+
         <div>
             <label for="title">Title</label>
             <input id="title" type="text" name="title" value="<?= $data["title"] ?>">

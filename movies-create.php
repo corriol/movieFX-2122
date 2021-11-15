@@ -1,8 +1,8 @@
 <?php declare(strict_types=1); ?>
 <?php
 session_start();
-if (empty($_SESSION["user"]))
-    die("<p><a href= \"login.php\">Login</a> or die!</p>");
+//if (empty($_SESSION["user"]))
+//    die("<p><a href= \"login.php\">Login</a> or die!</p>");
 
 // Inicialitze les variables perquè existisquen en tots els possibles camins
 // Sols emmagatzameré en elles valors vàlids.
@@ -27,8 +27,30 @@ $validTypes = ["image/jpeg", "image/jpg"];
 
 $errors = [];
 
+/*
+    Token per a evitar atacs CSRF:
+    1) Creem el token en mostrar el formulari
+    2) En llegir-lo l'esborrem, ja no serà valid perquè ja s'ha processat satisfactòriament o no el formulari
+    3) Si el token és invàlid cancelem l'execució
+
+*/
+
+$formToken =  bin2hex(random_bytes(16));
+
+// sempre que es mostre el formulari caldrà emmagatzemar el token
+// aquest són les condicions perquè es mostre:
+if (!isPost() || !empty($errors)) {
+    $_SESSION["token"] = $formToken;
+}
+
 // per a la vista necessitem saber si s'ha processat el formulari
 if (isPost()) {
+    $token = $_SESSION["token"]??"";
+    unset($_SESSION["token"]);
+
+
+    if (empty($token) || ($_POST["token"]!==$token))
+        die('Token invàlid');
 
     try {
         if (validate_string($_POST["title"], 1, 100))
@@ -109,7 +131,6 @@ if (isPost() && empty($errors)) {
     $moviesStmt = $pdo->prepare("INSERT INTO movie(title, overview, release_date, rating, poster) 
         VALUES (:title, :overview, :release_date, :rating, :poster)");
 
-    $moviesStmt->debugDumpParams();
     $moviesStmt->execute($data);
 
     if ($moviesStmt->rowCount() !== 1)
