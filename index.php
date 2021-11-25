@@ -2,6 +2,8 @@
 declare(strict_types=1);
 
 
+require 'src/FlashMessage.php';
+
 // es bona idea no treballar en literal
 const COOKIE_LAST_VISIT = "last_visit_date";
 
@@ -55,7 +57,7 @@ require "src/Movie.php";
 require "src/User.php";
 // ara obtindrem les pel·lícules de la BD
 // require "movies.inc.php";
-
+/*
 echo "<h2>Activitat 501</h2>";
 echo "<p>$message</p>";
 
@@ -67,7 +69,7 @@ if (!empty($_SESSION["message"])) {
     echo "<p>{$_SESSION["message"]}</p>";
     unset ($_SESSION["message"]);
 }
-
+*/
 
 
 $pdo = new PDO("mysql:host=mysql-server;dbname=movieFX;charset=utf8", "dbuser", "1234");
@@ -92,6 +94,7 @@ foreach ($moviesAr as $movieAr) {
     $movies[] = $movie;
 }
 
+/*
 // treballaré en l'última película
 echo "La pel·lícula {$movie->getTitle()} té una valoració de {$movie->getRating()}";
 
@@ -101,13 +104,10 @@ $value = 5;
 
 echo "<p>L'usuari {$user->getUsername()} la valora en $value punts</p>";
 
-$user->rate($movie, $value);
+//$user->rate($movie, $value);
 
 echo "<p>La pel·lícula {$movie->getTitle()} té ara una valoració de {$movie->getRating()}</p>";
+*/
+$message = FlashMessage::get("message");
 
-
-
-
-
-
-//require "views/index.view.php";
+require "views/index.view.php";

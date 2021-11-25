@@ -14,6 +14,8 @@ require "helpers.php";
 require 'src/Exceptions/FileUploadException.php';
 require_once 'src/Exceptions/NoUploadedFileException.php';
 require_once 'src/Movie.php';
+require_once 'src/FlashMessage.php';
+require_once 'src/UploadedFileHandler.php;'
 
 const MAX_SIZE = 1024 * 1000;
 
@@ -22,7 +24,6 @@ $data["release_date"] = "";
 $data["overview"] = "";
 $data["poster"] = "";
 $data["rating"] = 0;
-
 $validTypes = ["image/jpeg", "image/jpg"];
 
 $errors = [];
@@ -40,8 +41,7 @@ if (!isPost()) {
 }
 
 // per a la vista necessitem saber si s'ha processat el formulari
-$token = $_SESSION["token"] ?? "";
-unset($_SESSION["token"]);
+$token = FlashMessage::get("token", "");
 
 
 if (empty($token) || ($_POST["token"] !== $token))
@@ -74,47 +74,15 @@ else
     $errors[] = "Cal indicar una data correcta";
 
 
-$ratingTemp = filter_input(INPUT_POST, "rating", FILTER_VALIDATE_FLOAT);
+ try {
 
-if (!empty($ratingTemp) && ($ratingTemp > 0 && $ratingTemp <= 5))
-    $data["rating"] = $ratingTemp;
-else
-    $errors[] = "El rating ha de ser un enter entre 1 i 5";
+    $uploadedFileHandler = new UploadedFileHandler();
+    $uploadedFileHandler->handle();
 
-try {
-    if (!empty($_FILES['poster']) && ($_FILES['poster']['error'] == UPLOAD_ERR_OK)) {
-        if (!file_exists(Movie::POSTER_PATH))
-            mkdir(Movie::POSTER_PATH, 0777, true);
-
-        $tempFilename = $_FILES["poster"]["tmp_name"];
-        $currentFilename = $_FILES["poster"]["name"];
-
-        $mimeType = getFileExtension($tempFilename);
-
-        $extension = explode("/", getFileExtension($tempFilename))[1];
-        $newFilename = md5((string)rand()) . "." . $extension;
-        $newFullFilename = Movie::POSTER_PATH . "/" . $newFilename;
-        $fileSize = $_FILES["poster"]["size"];
-
-        if (!in_array($mimeType, $validTypes))
-            throw new InvalidTypeFileException("La foto no és jpg");
-
-        if ($extension != 'jpeg')
-            throw new InvalidTypeFileException("La foto no és jpg");
-
-        if ($fileSize > MAX_SIZE)
-            throw new TooBigFileException("La foto té $fileSize bytes");
-
-        if (!move_uploaded_file($tempFilename, $newFullFilename))
-            throw new FileUploadException("No s'ha pogut moure la foto");
-
-        $data["poster"] = $newFilename;
-
-    } else
-        throw new NoUploadedFileException("Cal pujar una photo");
 } catch (FileUploadException $e) {
     $errors[] = $e->getMessage();
 }
+
 
 if (empty($errors)) {
     $pdo = new PDO("mysql:host=mysql-server;dbname=movieFX;charset=utf8", "dbuser", "1234");
@@ -131,15 +99,15 @@ if (empty($errors)) {
         $errors[] = "No s'ha pogut inserir el registre";
     else {
         $message = "S'ha inserit el registre amb el ID ({$pdo->lastInsertId("movie")})";
-        $_SESSION["message"] = $message;
+        FlashMessage::set("message",  $message);
         header("Location: index.php");
         exit();
     }
 
 }
 // com que si hi ha hagut èxit redirigirem a la pàgina principal plantegem ací el pitjor escenari.
-$_SESSION["data"] = $data;
-$_SESSION["errors"] = $errors;
+FlashMessage::set("data",  $data);
+FlashMessage::set("errors", $errors);
 header("Location: movies-create.php");
 exit();
 

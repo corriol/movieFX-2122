@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Helpers;
+# namespace App\Core\Helpers;
 
 /**
  * Class FlashMessage
@@ -14,8 +14,8 @@ class FlashMessage
     const SESSION_KEY = "flash-message";
 
     /**
-     * get the value of the key passed as argument.
-     * after reading the value unsets it
+     * obté el valor associat a la clau indicada en el primer paràmetre
+     * després de llegir el valor l'elimina.
      * @param string $key
      * @param string $defaultValue
      * @return mixed|string

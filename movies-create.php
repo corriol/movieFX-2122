@@ -13,27 +13,25 @@ session_start();
 // Cree funció clean per a netejar valors
 
 require "helpers.php";
+require_once 'src/FlashMessage.php';
+
 if (isPost())
     die("Aquest pàgina sols admet el mètode GET");
 
 
 const MAX_SIZE = 1024*1000;
 
-if (empty($_SESSION["data"])) {
+$data = FlashMessage::get("data", []);
+
+if (empty($data)) {
     $data["title"] = "";
     $data["release_date"] = "";
     $data["overview"] = "";
     $data["poster"] = "";
     $data["rating"] = 0;
 }
-else {
-    $data = $_SESSION["data"];
-}
-//var_dump($data);
-unset($_SESSION["data"]);
 
-$errors = $_SESSION["errors"]??[];
-unset($_SESSION["errors"]);
+$errors = FlashMessage::get("errors", []);
 
 /*
     Token per a evitar atacs CSRF:
@@ -46,6 +44,5 @@ unset($_SESSION["errors"]);
 $formToken =  bin2hex(random_bytes(16));
 // sempre que es mostre el formulari caldrà emmagatzemar el token
 // en aquest cas sempre que es sol·licite la pàgina
-$_SESSION["token"] = $formToken;
-
+FlashMessage::set("token", $formToken);
 require "views/movies-create.view.php";

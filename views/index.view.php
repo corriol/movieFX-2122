@@ -2,9 +2,13 @@
 <html lang="ca">
 <head>
     <title>MovieFX</title>
+    <link rel="stylesheet" href="assets/global.css" />
 </head>
 <body>
     <h1>Pel·lícules</h1>
+    <?php if (!empty($message)) :?>
+        <div><?=$message?></div>
+    <?php endif; ?>
     <p><a href="movies-create.php">Nova pel·lícula</a></p>
     <ul>
     <?php foreach ($movies as $movie):?>

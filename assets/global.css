@@ -1,0 +1,45 @@
+body {
+    margin: 0 auto;
+    width: 80%;
+}
+
+main {
+    margin: 0 auto
+}
+
+label {
+    padding-top: 10px;
+    display: block;
+}
+
+input[type="submit"] {
+
+    margin-top: 10px;
+}
+
+header {
+    background: azure;
+}
+nav {
+ background: aliceblue;
+}
+
+nav ul {
+    display: flex;
+    justify-content: flex-start;
+}
+
+nav ul li {
+    flex: 0 0 200px;
+    list-style: none;
+}
+
+table {border-collapse: collapse }
+td {border: 1px solid;
+padding: 10px;}
+
+h1+div {
+    padding: 10px;
+    background-color: aliceblue;
+    border: 1px solid rebeccapurple;
+}
