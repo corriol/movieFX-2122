@@ -13,9 +13,13 @@ session_start();
 require "helpers.php";
 require 'src/Exceptions/FileUploadException.php';
 require_once 'src/Exceptions/NoUploadedFileException.php';
+require_once 'src/Exceptions/InvalidTypeFileException.php';
 require_once 'src/Movie.php';
 require_once 'src/FlashMessage.php';
 require_once 'src/UploadedFileHandler.php';
+require_once 'src/Registry.php';
+
+require_once 'bootstrap.php';
 
 const MAX_SIZE = 1024 * 1000;
 
@@ -76,8 +80,8 @@ else
 
  try {
 
-    $uploadedFileHandler = new UploadedFileHandler();
-    $uploadedFileHandler->handle();
+    $uploadedFileHandler = new UploadedFileHandler("poster", ["image/jpeg"], 0);
+    $data["poster"] = $uploadedFileHandler->handle("posters");
 
 } catch (FileUploadException $e) {
     $errors[] = $e->getMessage();
