@@ -15,7 +15,7 @@ require 'src/Exceptions/FileUploadException.php';
 require_once 'src/Exceptions/NoUploadedFileException.php';
 require_once 'src/Movie.php';
 require_once 'src/FlashMessage.php';
-require_once 'src/UploadedFileHandler.php;'
+require_once 'src/UploadedFileHandler.php';
 
 const MAX_SIZE = 1024 * 1000;
 
@@ -85,10 +85,7 @@ else
 
 
 if (empty($errors)) {
-    $pdo = new PDO("mysql:host=mysql-server;dbname=movieFX;charset=utf8", "dbuser", "1234");
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $pdo->setAttribute(PDO::MYSQL_ATTR_INIT_COMMAND, 'SET NAMES utf8');
-
+    $pdo = Registry::get(Registry::PDO);
 
     $moviesStmt = $pdo->prepare("INSERT INTO movie(title, overview, release_date, rating, poster) 
         VALUES (:title, :overview, :release_date, :rating, :poster)");
