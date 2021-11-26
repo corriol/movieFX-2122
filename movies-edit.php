@@ -12,6 +12,9 @@ require "helpers.php";
 require 'src/Exceptions/FileUploadException.php';
 require_once 'src/Exceptions/NoUploadedFileException.php';
 require_once 'src/Movie.php';
+require_once 'src/UploadedFileHandler.php';
+require_once 'src/Registry.php';
+require_once 'bootstrap.php';
 
 const MAX_SIZE = 1024*1000;
 
@@ -83,46 +86,21 @@ if (isPost()) {
         $errors[] = "El rating ha de ser un enter entre 1 i 5";*/
 
     try {
-        if (!empty($_FILES['poster']) && ($_FILES['poster']['error'] == UPLOAD_ERR_OK)) {
-            if (!file_exists(Movie::POSTER_PATH))
-                mkdir(Movie::POSTER_PATH, 0777, true);
 
-            $tempFilename = $_FILES["poster"]["tmp_name"];
-            $currentFilename = $_FILES["poster"]["name"];
+        $uploadedFileHandler = new UploadedFileHandler("poster", ["image/jpeg"], MAX_SIZE);
+        $data["poster"] = $uploadedFileHandler->handle("posters");
 
-            $mimeType = getFileExtension($tempFilename);
-
-            $extension = explode("/", getFileExtension($tempFilename))[1];
-            $newFilename = md5((string)rand()) . "." . $extension;
-            $newFullFilename = Movie::POSTER_PATH . "/" . $newFilename;
-            $fileSize = $_FILES["poster"]["size"];
-
-            if (!in_array($mimeType, $validTypes))
-                throw new InvalidTypeFileException("La foto no és jpg");
-
-            if ($extension != 'jpeg')
-                throw new InvalidTypeFileException("La foto no és jpg");
-
-            if ($fileSize > MAX_SIZE)
-                throw new TooBigFileException("La foto té $fileSize bytes");
-
-            if (!move_uploaded_file($tempFilename, $newFullFilename))
-                throw new FileUploadException("No s'ha pogut moure la foto");
-
-            $data["poster"] = $newFilename;
-
-        } //else
-          //  throw new NoUploadedFileException("Cal pujar una photo");
-    } catch (FileUploadException $e) {
+    }
+    catch (NoUploadedFileException $e) {
+        // no faig res perquè és una opció vàlida en UPDATE.
+    }
+    catch (FileUploadException $e) {
         $errors[] = $e->getMessage();
     }
 }
 
 if (isPost() && empty($errors)) {
-    $pdo = new PDO("mysql:host=mysql-server;dbname=movieFX;charset=utf8", "dbuser", "1234");
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $pdo->setAttribute(PDO::MYSQL_ATTR_INIT_COMMAND, 'SET NAMES utf8');
-
+    $pdo = Registry::get("PDO");
 
     $moviesStmt = $pdo->prepare("UPDATE movie 
                             set title = :title, 

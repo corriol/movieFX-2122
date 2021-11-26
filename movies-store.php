@@ -80,7 +80,7 @@ else
 
  try {
 
-    $uploadedFileHandler = new UploadedFileHandler("poster", ["image/jpeg"], 0);
+    $uploadedFileHandler = new UploadedFileHandler("poster", ["image/jpeg"], MAX_SIZE);
     $data["poster"] = $uploadedFileHandler->handle("posters");
 
 } catch (FileUploadException $e) {
