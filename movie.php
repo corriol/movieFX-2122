@@ -2,11 +2,9 @@
 declare(strict_types=1);
 
 require 'bootstrap.php';
-require "src/Movie.php";
-require_once 'src/MovieRepository.php';
-require_once 'src/MovieMapper.php';
-require_once 'src/Registry.php';
 
+use App\Movie;
+use App\MovieRepository;
 //creem l'array d'objectes Movie
 //require "movies.inc.php";
 

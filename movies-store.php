@@ -53,8 +53,7 @@ $token = FlashMessage::get("token");
 $data["title"] = clean($_POST["title"]??"");
 $data["overview"] = clean($_POST["overview"]??"");
 $data["release_date"] = $_POST["release_date"];
-$ratingTemp = filter_input(INPUT_POST, "rating", FILTER_VALIDATE_FLOAT);
-$data["rating"] = $ratingTemp;
+
 
 try {
     $uploadedFileHandler = new UploadedFileHandler("poster", $validTypes, MAX_SIZE);

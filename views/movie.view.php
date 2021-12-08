@@ -5,7 +5,9 @@
 </head>
 <body>
     <h1>Pel·lícules</h1>
-    <?php if (!empty($movie)): ?>
+    <?php use App\Movie;
+
+    if (!empty($movie)): ?>
         <h2><?=$movie->getTitle()?></h2>
         <figure>
             <img style="width: 100px" alt="<?=$movie->getTitle() ?>" src="<?=Movie::POSTER_PATH?>/<?=$movie->getPoster() ?>" />

@@ -1,4 +1,11 @@
-<?php declare(strict_types=1); ?>
+<?php declare(strict_types=1);
+
+use App\Exceptions\FileUploadException;
+use App\Exceptions\NoUploadedFileException;
+use App\Exceptions\RequiredValidationException;
+use App\Exceptions\TooLongValidationException;
+use App\Exceptions\TooShortValidationException;
+use App\Movie; ?>
 
 <?php
 

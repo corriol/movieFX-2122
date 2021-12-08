@@ -1,10 +1,14 @@
 <?php
 declare(strict_types=1);
 
+namespace App;
+
+use Webmozart\Assert\Assert;
+
 class Movie
 {
     const POSTER_PATH = "posters";
-    public ?int $id;
+    public ?int $id = null;
     private string $title;
     private string $overview;
     private string $releaseDate;
@@ -32,7 +36,7 @@ class Movie
 
 
     /**
-     * @return int
+     * @return ?int
      */
     public function getId(): ?int
     {
@@ -40,7 +44,7 @@ class Movie
     }
 
     /**
-     * @param int $id
+     * @param ?int $id
      */
     public function setId(?int $id): void
     {
@@ -60,6 +64,7 @@ class Movie
      */
     public function setTitle(string $title): void
     {
+        Assert::lengthBetween($title, 1, 100);
         $this->title = $title;
     }
 
@@ -76,6 +81,7 @@ class Movie
      */
     public function setOverview(string $overview): void
     {
+        Assert::lengthBetween($overview, 1, 300);
         $this->overview = $overview;
     }
 
@@ -92,6 +98,8 @@ class Movie
      */
     public function setReleaseDate(string $releaseDate): void
     {
+        if (!validate_date($releaseDate))
+            throw new \WebMozart\Assert\InvalidArgumentException("date invalid");
         $this->releaseDate = $releaseDate;
     }
 
@@ -124,6 +132,7 @@ class Movie
      */
     public function setPoster(string $poster): void
     {
+        Assert::notEmpty($poster);
         $this->poster = $poster;
     }
 
@@ -143,32 +152,32 @@ class Movie
         $this->voters = $voters;
     }
 
+    public static function fromArray(array $data): Movie
+    {
+        if (empty($data["id"])) 
+            $id = null;
+        else
+            $id = (int)$data["id"];
+                
+        return new Movie(
+            $id,
+            $data["title"],
+            $data["overview"],
+            $data["release_date"],
+            (float)$data["rating"],
+            $data["poster"]
+        );
+    }
+
     public function toArray(): array
     {
-        return ["id" => $this->getId(),
+        return [
+            "id" => $this->getId(),
             "title" => $this->getTitle(),
             "overview" => $this->getOverview(),
             "release_date" => $this->getReleaseDate(),
             "rating" => $this->getRating(),
             "poster" => $this->getPoster()
         ];
-    }
-
-    public static function fromArray(array $raw): Movie
-    {
-        if (is_null($raw["id"]))
-            $id = null;
-        else
-            $id = (int)$raw["id"];
-
-        $obj = new Movie(
-            $id,
-            $raw["title"],
-            $raw['overview'],
-            $raw["release_date"],
-            (float)$raw["rating"],
-            $raw["poster"]
-        );
-        return $obj;
     }
 }

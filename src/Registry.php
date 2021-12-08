@@ -19,7 +19,6 @@ abstract class Registry
      * this introduces global state in your application which can not be mocked up for testing
      * and is therefore considered an anti-pattern! Use dependency injection instead!
      *
-     * @var Service[]
      */
     private static array $services = [];
 
@@ -47,6 +46,11 @@ abstract class Registry
     public static function setPDO(ConfigInterface $config) {
         $pdo = new PDO($config->getDataSourceName());
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        static::set("PDO", $pdo);
+        static::set(self::PDO, $pdo);
+    }
+
+    public static function getPDO()
+    {
+        return static::get(self::PDO);
     }
 }

@@ -6,6 +6,8 @@
  * Class FlashMessage
  *
  */
+namespace App;
+
 class FlashMessage
 {
     /**

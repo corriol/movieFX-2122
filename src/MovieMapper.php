@@ -1,63 +1,46 @@
 <?php
 
-require_once 'Movie.php';
+namespace App;
+use App\Movie;
+use App\Registry;
+use PDO;
 
 class MovieMapper
 {
-    protected $pdo;
+    protected PDO $pdo;
 
-    private $selectStmt;
-    private $updateStmt;
-    private $insertStmt;
-    private $deleteStmt;
-    private $selectAllStmt;
 
     public function __construct()
     {
-
         $this->pdo = Registry::getPDO();
-        $this->selectAllStmt = $this->pdo->prepare(
-            "SELECT * FROM movie"
-        );
 
-        $this->selectStmt = $this->pdo->prepare(
-            "SELECT * FROM movie WHERE id=:id"
-        );
-        $this->updateStmt = $this->pdo->prepare(
-            "UPDATE movie 
-                            set title = :title, 
-                                overview = :overview, 
-                                release_date =:release_date, 
-                                rating = :rating, 
-                                poster=:poster
-                                WHERE id = :id"
-        );
 
-        $this->insertStmt = $this->pdo->prepare(
-            "INSERT INTO movie(title, overview, release_date, rating, poster) 
-            VALUES (:title, :overview, :release_date, :rating, :poster)"
-        );
     }
 
     public function find(int $id): ?Movie
     {
-        $this->selectStmt->execute(["id"=>$id]);
-        $row = $this->selectStmt->fetch();
-        $this->selectStmt->closeCursor();
+        $stmt = $this->pdo->prepare("SELECT * FROM movie WHERE id=:id");
+        $stmt->execute(["id"=>$id]);
+        $row = $stmt->fetch();
+        $stmt->closeCursor();
         if (!is_array($row)) {
             return null;
         }
         if (!isset($row['id'])) {
             return null;
         }
-        $object = $this->createObject($row);
+        $object = Movie::fromArray($row);
         return $object;
     }
 
     public function findAll(): array {
         $array = [];
-        $this->selectAllStmt->execute();
-        while ($row = $this->selectAllStmt->fetch())
+        $selectAllStmt = $this->pdo->prepare(
+            "SELECT * FROM movie"
+        );
+
+        $selectAllStmt->execute();
+        while ($row = $selectAllStmt->fetch())
             $array[] = Movie::fromArray($row);
         return $array;
     }
@@ -72,7 +55,10 @@ class MovieMapper
     {
         $values = $obj->toArray();
         unset($values["id"]);
-        $this->insertStmt->execute($values);
+        $insertStmt = $this->pdo->prepare(
+            "INSERT INTO movie(title, overview, release_date, rating, poster) 
+            VALUES (:title, :overview, :release_date, :rating, :poster)");
+        $insertStmt->execute($values);
         $id = $this->pdo->lastInsertId();
         $obj->setId((int)$id);
     }
@@ -80,7 +66,18 @@ class MovieMapper
     public function update(Movie $object)
     {
         $values = $object->toArray($object);
-        $this->updateStmt->execute($values);
+
+        $updateStmt = $this->pdo->prepare(
+            "UPDATE movie 
+                            set title = :title, 
+                                overview = :overview, 
+                                release_date =:release_date, 
+                                rating = :rating, 
+                                poster=:poster
+                                WHERE id = :id"
+        );
+
+        $updateStmt->execute($values);
     }
 
 }
