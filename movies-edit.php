@@ -14,6 +14,8 @@ require_once 'src/Exceptions/NoUploadedFileException.php';
 require_once 'src/Movie.php';
 require_once 'src/UploadedFileHandler.php';
 require_once 'src/Registry.php';
+require_once 'src/MovieRepository.php';
+require_once 'src/MovieMapper.php';
 require_once 'bootstrap.php';
 
 const MAX_SIZE = 1024*1000;
@@ -21,25 +23,19 @@ const MAX_SIZE = 1024*1000;
 // En el cas de l'edició els valors inicials haurien de ser els de l'objecte a actualitzar, així
 // que caldria inicialitzar l'array $data  tant en l'opció de post com en la get
 
-if (isPost())
-    $idTemp = filter_input(INPUT_POST, "id", FILTER_VALIDATE_INT);
-else
-    $idTemp = filter_input(INPUT_GET, "id", FILTER_VALIDATE_INT);
+$id = $_POST["id"]?? $_GET["id"] ?? null;
 
-if (!empty($idTemp))
-    $id = $idTemp;
-else
+if (empty($id))
     throw new Exception("Id Invalid");
+else
+    $id = (int)$id;
 
-$pdo = new PDO("mysql:host=mysql-server;dbname=movieFX;charset=utf8", "dbuser", "1234");
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+$movieRepository = new MovieRepository();
 
-$moviesStmt = $pdo->prepare("SELECT * FROM movie WHERE id=:id");
-$moviesStmt->bindValue("id", $id);
-$moviesStmt->setFetchMode(PDO::FETCH_ASSOC);
-$moviesStmt->execute();
+$movie = $movieRepository->find($id);
 
-$data = $moviesStmt->fetch();
+$data = $movie->toArray();
+
 if (empty($data))
     throw new Exception("La pel·lícula seleccionada no existeix");
 
@@ -100,22 +96,9 @@ if (isPost()) {
 }
 
 if (isPost() && empty($errors)) {
-    $pdo = Registry::get("PDO");
-
-    $moviesStmt = $pdo->prepare("UPDATE movie 
-                            set title = :title, 
-                                overview = :overview, 
-                                release_date =:release_date, 
-                                rating = :rating, 
-                                poster=:poster
-                                WHERE id = :id");
-
-    $moviesStmt->execute($data);
-
-    if ($moviesStmt->rowCount() !== 1)
-        $errors[] = "No s'ha pogut actualitzar el registre";
-    else
-        $message = "S'ha actualitzat el registre amb l'ID ({$data["id"]})";
+    $movie = Movie::fromArray($data);
+    $movieRepository->save($movie);
+    $message = "S'ha actualitzat el registre amb l'ID ({$movie->getId()})";
 }
 
 require "views/movies-edit.view.php";

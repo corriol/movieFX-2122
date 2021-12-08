@@ -18,11 +18,14 @@ require_once 'src/Movie.php';
 require_once 'src/FlashMessage.php';
 require_once 'src/UploadedFileHandler.php';
 require_once 'src/Registry.php';
+require_once 'src/MovieMapper.php';
+require_once 'src/MovieRepository.php';
 
 require_once 'bootstrap.php';
 
 const MAX_SIZE = 1024 * 1000;
 
+$data["id"] = null;
 $data["title"] = "";
 $data["release_date"] = "";
 $data["overview"] = "";
@@ -48,8 +51,8 @@ if (!isPost()) {
 $token = FlashMessage::get("token", "");
 
 
-if (empty($token) || ($_POST["token"] !== $token))
-    die('Token invàlid');
+//if (empty($token) || ($_POST["token"] !== $token))
+//    die('Token invàlid');
 
 try {
     if (validate_string($_POST["title"], 1, 100))
@@ -89,28 +92,21 @@ else
 
 
 if (empty($errors)) {
-    $pdo = Registry::get(Registry::PDO);
 
-    $moviesStmt = $pdo->prepare("INSERT INTO movie(title, overview, release_date, rating, poster) 
-        VALUES (:title, :overview, :release_date, :rating, :poster)");
+    //$pdo = Registry::get(Registry::PDO);
+    $movie = Movie::fromArray($data);
+    $movieRepository = new MovieRepository();
+    $movieRepository->save($movie);
 
-    $moviesStmt->execute($data);
-
-    if ($moviesStmt->rowCount() !== 1)
-        $errors[] = "No s'ha pogut inserir el registre";
-    else {
-        $message = "S'ha inserit el registre amb el ID ({$pdo->lastInsertId("movie")})";
-        FlashMessage::set("message",  $message);
-        header("Location: index.php");
-        exit();
-    }
-
+    $message = "S'ha inserit el registre amb el ID ({$movie->getId()})";
+    FlashMessage::set("message",  $message);
+    header("Location: index.php");
+    exit();
 }
 // com que si hi ha hagut èxit redirigirem a la pàgina principal plantegem ací el pitjor escenari.
 FlashMessage::set("data",  $data);
 FlashMessage::set("errors", $errors);
 header("Location: movies-create.php");
 exit();
-
 
 //require "views/movies-create.view.php";

@@ -40,6 +40,6 @@ abstract class Registry
         return self::$services[$key];
     }
     public static function getPDO() {
-
+        return self::$services[self::PDO];
     }
 }

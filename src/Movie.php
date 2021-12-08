@@ -4,7 +4,7 @@ declare(strict_types=1);
 class Movie
 {
     const POSTER_PATH = "posters";
-    public int $id;
+    public ?int $id;
     private string $title;
     private string $overview;
     private string $releaseDate;
@@ -13,9 +13,28 @@ class Movie
     private string $poster;
 
     /**
+     * @param ?int $id
+     * @param string $title
+     * @param string $overview
+     * @param string $releaseDate
+     * @param float $rating
+     * @param string $poster
+     */
+    public function __construct(?int $id, string $title, string $overview, string $releaseDate, float $rating, string $poster)
+    {
+        $this->setId($id);
+        $this->setTitle($title);
+        $this->setOverview($overview);
+        $this->setReleaseDate($releaseDate);
+        $this->setRating($rating);
+        $this->setPoster($poster);
+    }
+
+
+    /**
      * @return int
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -23,7 +42,7 @@ class Movie
     /**
      * @param int $id
      */
-    public function setId(int $id): void
+    public function setId(?int $id): void
     {
         $this->id = $id;
     }
@@ -124,4 +143,32 @@ class Movie
         $this->voters = $voters;
     }
 
+    public function toArray(): array
+    {
+        return ["id" => $this->getId(),
+            "title" => $this->getTitle(),
+            "overview" => $this->getOverview(),
+            "release_date" => $this->getReleaseDate(),
+            "rating" => $this->getRating(),
+            "poster" => $this->getPoster()
+        ];
+    }
+
+    public static function fromArray(array $raw): Movie
+    {
+        if (is_null($raw["id"]))
+            $id = null;
+        else
+            $id = (int)$raw["id"];
+
+        $obj = new Movie(
+            $id,
+            $raw["title"],
+            $raw['overview'],
+            $raw["release_date"],
+            (float)$raw["rating"],
+            $raw["poster"]
+        );
+        return $obj;
+    }
 }

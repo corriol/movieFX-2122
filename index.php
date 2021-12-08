@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 
 require 'src/FlashMessage.php';
-require 'src/Registry.php';
-
+require_once 'src/Registry.php';
+require_once 'src/MovieMapper.php';
+require_once 'src/MovieRepository.php';
+require 'bootstrap.php';
 // es bona idea no treballar en literal
 const COOKIE_LAST_VISIT = "last_visit_date";
 
@@ -54,8 +56,7 @@ else
 $_SESSION["visits"][] = time();
 
 
-require "src/Movie.php";
-require "src/User.php";
+require_once "src/User.php";
 // ara obtindrem les pel·lícules de la BD
 // require "movies.inc.php";
 /*
@@ -84,16 +85,10 @@ $moviesStmt->execute();
 // caldrà mapejar les dades
 $moviesAr = $moviesStmt->fetchAll();
 
-foreach ($moviesAr as $movieAr) {
-    $movie = new Movie();
-    $movie->setId((int)$movieAr["id"]);
-    $movie->setTitle($movieAr["title"]);
-    $movie->setPoster($movieAr["poster"]);
-    $movie->setReleaseDate($movieAr["release_date"]);
-    $movie->setOverview($movieAr["overview"]);
-    $movie->setRating((float)$movieAr["rating"]);
-    $movies[] = $movie;
-}
+$movieRepository = new MovieRepository();
+$movies = $movieRepository->findAll();
+
+
 
 /*
 // treballaré en l'última película
