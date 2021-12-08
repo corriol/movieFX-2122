@@ -1,12 +1,22 @@
 <?php
-require_once 'src/Registry.php';
+require "vendor/autoload.php";
 
-$pdo = new PDO("mysql:host=mysql-server;dbname=movieFX;charset=utf8;user=root;password=secret");
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+use App\Josep\Config;
+use App\Registry;
 
-try {
-    Registry::set("PDO", $pdo);
-} catch (Exception $e) {
-    die($e->getMessage());
-}
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+use Monolog\Handler\FirePHPHandler;
 
+
+$configXML = new \App\Alex\Config('config.xml');
+$configJson = new \App\Josep\Config('config.json');
+
+Registry::setPDO($configXML);
+//Registry::setPDO($configJson);
+
+// create a log channel
+$log = new Logger('movies');
+$log->pushHandler(new StreamHandler('app.log', Logger::DEBUG));
+$log->pushHandler(new FirePHPHandler());
+Registry::set(Registry::LOGGER, $log);

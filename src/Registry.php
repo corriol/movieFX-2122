@@ -1,9 +1,14 @@
 <?php
 declare(strict_types=1);
 
-//namespace DesignPatterns\Structural\Registry;
+
+namespace App;
 
 //use InvalidArgumentException;
+
+use App\Alex\Config;
+use Exception;
+use PDO;
 
 abstract class Registry
 {
@@ -39,7 +44,9 @@ abstract class Registry
         }
         return self::$services[$key];
     }
-    public static function getPDO() {
-        return self::$services[self::PDO];
+    public static function setPDO(ConfigInterface $config) {
+        $pdo = new PDO($config->getDataSourceName());
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        static::set("PDO", $pdo);
     }
 }

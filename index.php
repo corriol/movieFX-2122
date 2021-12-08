@@ -1,15 +1,15 @@
 <?php
 declare(strict_types=1);
 
-
-require 'src/FlashMessage.php';
-require_once 'src/Registry.php';
-require_once 'src/MovieMapper.php';
-require_once 'src/MovieRepository.php';
 require 'bootstrap.php';
+
+use App\Movie;
+use App\Registry;
+use App\FlashMessage;
+
+
 // es bona idea no treballar en literal
 const COOKIE_LAST_VISIT = "last_visit_date";
-
 
 
 // we get the current cookie value
@@ -42,11 +42,11 @@ setcookie(COOKIE_LAST_VISIT, (string)time(), time() + 7 * 24 * 60 * 60);
 session_start();
 
 // comprovem si es la primera visita
-$visits = $_SESSION["visits"]??[];
+$visits = $_SESSION["visits"] ?? [];
 
 // if not empty generate an HTML Unordered List
 if (!empty($visits))
-    $messageSession =  "<ul><li>" . implode("</li><li>", array_map(function($v) {
+    $messageSession = "<ul><li>" . implode("</li><li>", array_map(function ($v) {
             return date("d/m/Y h:i:s", $v);
         }, $visits)) . "</li></ul>";
 else
@@ -56,7 +56,8 @@ else
 $_SESSION["visits"][] = time();
 
 
-require_once "src/User.php";
+require "src/Movie.php";
+require "src/User.php";
 // ara obtindrem les pel·lícules de la BD
 // require "movies.inc.php";
 /*
@@ -65,45 +66,44 @@ echo "<p>$message</p>";
 
 echo "<h2>Activitat 504</h2>";
 echo "<p>$messageSession</p>";
-
-if (!empty($_SESSION["message"])) {
-    echo "<h2>Activitat 507</h2>";
-    echo "<p>{$_SESSION["message"]}</p>";
-    unset ($_SESSION["message"]);
-}
 */
+$message = FlashMessage::get("message");
+if (!empty($message)) {
+    echo "<h2>Missatge</h2>";
+    echo "<p>$message</p>";
+}
 
-
-$pdo = new PDO("mysql:host=mysql-server;dbname=movieFX;charset=utf8", "dbuser", "1234");
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
+$pdo = Registry::get("PDO");
 $moviesStmt = $pdo->prepare("SELECT * FROM movie");
 $moviesStmt->setFetchMode(PDO::FETCH_ASSOC);
 $moviesStmt->execute();
+
+
+$logger = Registry::get(Registry::LOGGER);
+$logger->info("s'ha executat una consulta");
 
 // fetchAll tornarà un array les dades de pel·lícules en un altre array
 // caldrà mapejar les dades
 $moviesAr = $moviesStmt->fetchAll();
 
-$movieRepository = new MovieRepository();
-$movies = $movieRepository->findAll();
+foreach ($moviesAr as $movieAr) {
+    $movies[] = Movie::fromArray($movieAr);
+}
 
+//$movie = new Movie(12222, "", "asdfasdfsd",
+//    "2021-10-12", 4.2, "asd.jpg");
 
-
-/*
 // treballaré en l'última película
-echo "La pel·lícula {$movie->getTitle()} té una valoració de {$movie->getRating()}";
+//echo "La pel·lícula {$movie->getTitle()} té una valoració de {$movie->getRating()}";
 
-$user = new User(1, "Vicent");
+//$user = new User(1, "Vicent");
 
-$value = 5;
+//$value = 5;
 
-echo "<p>L'usuari {$user->getUsername()} la valora en $value punts</p>";
+//echo "<p>L'usuari {$user->getUsername()} la valora en $value punts</p>";
 
 //$user->rate($movie, $value);
 
-echo "<p>La pel·lícula {$movie->getTitle()} té ara una valoració de {$movie->getRating()}</p>";
-*/
-$message = FlashMessage::get("message");
+//echo "<p>La pel·lícula {$movie->getTitle()} té ara una valoració de {$movie->getRating()}</p>";
 
 require "views/index.view.php";
