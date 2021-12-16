@@ -2,7 +2,7 @@ FROM php:7.4.23-apache
 RUN docker-php-ext-install mysqli pdo pdo_mysql
 RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
 # change document root directory
-ENV APACHE_DOCUMENT_ROOT /var/www/html
+ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 
 RUN sed -ri -e 's!disable_functions =!disable_functions = putenv!g' /usr/local/etc/php/php.ini
 

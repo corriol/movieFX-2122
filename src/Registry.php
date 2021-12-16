@@ -14,6 +14,7 @@ abstract class Registry
 {
     public const LOGGER = 'logger';
     public const PDO = 'PDO';
+    public const ROUTER = 'router';
 
     /**
      * this introduces global state in your application which can not be mocked up for testing
@@ -24,7 +25,8 @@ abstract class Registry
 
     private static array $allowedKeys = [
         self::LOGGER,
-        self::PDO
+        self::PDO,
+        self::ROUTER
     ];
 
     public static function set(string $key, $value)

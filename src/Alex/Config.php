@@ -9,7 +9,7 @@ class Config implements ConfigInterface
     private \SimpleXMLElement $conf;
     public function __construct(string $configPath)
     {
-        $this->conf = simplexml_load_file("config.xml");
+        $this->conf = simplexml_load_file($configPath);
     }
 
     public function getDSN(): string{

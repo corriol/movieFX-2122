@@ -6,7 +6,9 @@
     },
     "require": {
         "monolog/monolog": "^2.3",
-        "webmozart/assert": "^1.10"
+        "webmozart/assert": "^1.10",
+        "altorouter/altorouter": "^2.0",
+      "ext-simplexml": "*"
     },
     "autoload": {
         "psr-4": {

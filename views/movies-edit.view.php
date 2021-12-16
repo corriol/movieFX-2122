@@ -11,7 +11,7 @@
 <body>
 <h1>Editar pel·lícula</h1>
     <?php if (!isPost() || !empty($errors)) :?>
-    <form action="movies-edit.php" method="post" enctype="multipart/form-data">
+    <form action="<?=\App\Registry::get(\App\Registry::ROUTER)->generate("movie_edit", ["id"=>$movie->getId()])?>" method="post" enctype="multipart/form-data">
         <pre>
         <?php
         if (!empty($errors))
