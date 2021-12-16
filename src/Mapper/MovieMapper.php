@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Mapper;
 use App\Movie;
 use App\Registry;
 use PDO;

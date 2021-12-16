@@ -81,7 +81,7 @@ class Movie
      */
     public function setOverview(string $overview): void
     {
-        Assert::lengthBetween($overview, 1, 300);
+        Assert::lengthBetween($overview, 1, 500);
         $this->overview = $overview;
     }
 

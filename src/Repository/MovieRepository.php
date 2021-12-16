@@ -1,15 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace App;
+namespace App\Repository;
+use App\Mapper\MovieMapper;
 use App\Movie;
 
 class MovieRepository
 {
     public MovieMapper $mapper;
-    public function __construct()
+    public function __construct(MovieMapper $mapper)
     {
-        $this->mapper = new MovieMapper();
+        $this->mapper = $mapper;
     }
 
     public function save(Movie $movie) {

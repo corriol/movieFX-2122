@@ -15,5 +15,9 @@
             "App\\": "src/"
         },
         "files": ["helpers.php"]
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5",
+        "fakerphp/faker": "^1.17"
     }
 }
