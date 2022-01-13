@@ -1,0 +1,27 @@
+.carousel-item img {
+    width: 900px;
+    height: 350px;
+}
+
+h4.card-title a {
+    font-size: 1.2rem;
+    color: black;
+}
+
+p.card-text {
+    margin-top: 0.2em;
+    line-height: 1.2em;
+}
+h4.card-title {
+    margin: 0;
+    line-height: 1rem;
+}
+card h5 {
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.connect a {
+    color: #6c757d;
+}
+

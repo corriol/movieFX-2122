@@ -8,15 +8,18 @@ $prefix = "App\\Controller\\";
 
 $match = $router->match();
 
-var_dump($match);
+//var_dump($match);
 
 if (is_array($match)) {
-    $temp = explode("#", $match["target"]);
-    $controller = $prefix . $temp[0];
-    $action = $temp[1];
-    if (method_exists($controller, $action)) {
+    $target = explode("#", $match["target"]);
+    $controller = $prefix . $target[0];
+    $method = $target[1];
+    if (method_exists($controller, $method)) {
         $object = new $controller;
-        call_user_func_array([$object, $action], $match['params']);
+        $response = call_user_func_array([$object, $method], $match['params']);
+
+        $response->writeHeaders();
+        echo $response->render();
     } else {
         // no route was matched
         header($_SERVER["SERVER_PROTOCOL"] . ' 404 Not Found');

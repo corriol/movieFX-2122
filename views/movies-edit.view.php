@@ -1,14 +1,4 @@
-<!DOCTYPE html>
-<html lang="ca">
-
-<head>
-    <meta charset="utf-8">
-    <title>Editar pel·lícula</title>
-    <meta name="description" content="PHP, PHPStorm">
-    <meta name="author" content="Homer Simpson">
-</head>
-
-<body>
+<div class="container">
 <h1>Editar pel·lícula</h1>
     <?php if (!isPost() || !empty($errors)) :?>
     <form action="<?=\App\Registry::get(\App\Registry::ROUTER)->generate("movie_edit", ["id"=>$movie->getId()])?>" method="post" enctype="multipart/form-data">
@@ -71,6 +61,4 @@
 
         </table>
     <?php endif ?>
-</body>
-
-</html>
+</div>

@@ -5,9 +5,11 @@ namespace App\Controller;
 use App\Exceptions\FileUploadException;
 use App\Exceptions\NoUploadedFileException;
 use App\FlashMessage;
+use App\Mapper\MovieMapper;
 use App\Movie;
-use App\MovieRepository;
+use App\Repository\MovieRepository;
 use App\Registry;
+use App\Response;
 use App\UploadedFileHandler;
 
 class MovieController
@@ -17,10 +19,11 @@ class MovieController
 
     public function __construct()
     {
-        $this->movieRepository = new MovieRepository();
+        $mapper = new MovieMapper();
+        $this->movieRepository = new MovieRepository($mapper);
     }
 
-    public function list()
+    public function list(): Response
     {
         $message = FlashMessage::get("message");
 
@@ -29,10 +32,16 @@ class MovieController
         $logger = Registry::get(Registry::LOGGER);
         $logger->info("s'ha executat una consulta");
 
-        require __DIR__ . "/../../views/index.view.php";
+        $response = new Response();
+        $response->setView("index");
+        $response->setLayout("default");
+        $response->setData(compact('movies'));
+
+        return $response;
+        //require __DIR__ . "/../../views/index.view.php";
     }
 
-    public function edit(int $id)
+    public function edit(int $id): Response
     {
         //die("editant la pel·licula $id");
 
@@ -43,7 +52,7 @@ class MovieController
         //else
         //    $id = (int)$id;
 
-
+        $message = "";
         $movie = $this->movieRepository->find($id);
         $data = $movie->toArray();
 
@@ -82,6 +91,13 @@ class MovieController
 
             }
         }
-        require __DIR__ ."/../../views/movies-edit.view.php";
+        $response = new Response();
+        $response->setView("movies-edit");
+        $response->setLayout("default");
+        $response->setData(compact('movie', 'data', 'message'));
+
+        return $response;
+
+        //require __DIR__ ."/../../views/movies-edit.view.php";
     }
 }

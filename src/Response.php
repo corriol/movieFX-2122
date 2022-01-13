@@ -2,46 +2,67 @@
 declare(strict_types=1);
 
 
-namespace App\Core;
+namespace App;
 
 
 class Response
 {
+    private int $status;
+    private string $mime;
+
+    private string $layout = 'default';
+    private string $view;
+    private array $data = [];
+
+    public function __construct(int $status = 200, string $mime = "text/html")
+    {
+        $this->status = $status;
+        $this->mime = $mime;
+    }
+
+    public function writeHeaders() {
+        header($_SERVER["SERVER_PROTOCOL"] . ' ' . $this->status);
+        header('Content-Type: {$this->mime}; charset=UTF-8');
+    }
     /**
      * @param string $view
      * @param string $layout
      * @param array $data
      * @return string
      */
-    public function renderView(string $view, string $layout = 'default', array $data = []): string {
+    public function render(): string {
 
-        extract($data);
+        extract($this->data);
 
         // Change: Integrate the FlashMessage management
-        $flashMessage = App::get("flash");
-        $router = App::get(Router::class);
-        $user = App::get('user');
-        $config = App::get("config");
+        //$flashMessage = App::get("flash");
+        //$router = App::get(Router::class);
+        //$user = App::get('user');
+        //$config = App::get("config");
 
         ob_start();
-        require __DIR__ . "/../../views/$view.view.php";
+        require __DIR__ . "/../views/{$this->view}.view.php";
         $content = ob_get_clean();
 
         ob_start();
-        require __DIR__ . "/../../views/_layouts/$layout.layout.php";
+        require __DIR__ . "/../views/layouts/{$this->layout}.layout.php";
 
         return ob_get_clean();
     }
 
-    /**
-     * @param mixed $element
-     * @param int $httpStatus
-     * @return string
-     */
-    public function jsonResponse(array $element, int $httpStatus = 200): string
+
+    public function setView(string $view)
     {
-        header($_SERVER["SERVER_PROTOCOL"] . ' ' . $httpStatus);
-        header('Content-Type: application/json; charset=UTF-8');
-        return json_encode($element);
+        $this->view = $view;
+    }
+
+    public function setLayout(string $layout)
+    {
+        $this->layout = $layout;
+    }
+
+    public function setData(array $compact)
+    {
+        $this->data = $compact;
     }
 }
